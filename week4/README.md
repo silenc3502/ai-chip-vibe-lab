@@ -11,25 +11,29 @@
 
 ## 회차
 
-### 4-1. 최적화 개념
-- Pareto front, Design Space Exploration 개념
-- 무엇을 최적화 대상으로 삼을 것인가
+### [4-1. 최적화 개념 — Pareto Front + DSE](sessions/4-1.md)
+- 48 config sweep, (latency, energy) 평면에 plot
+- Pareto front 식별, 본인 base config 위치 평가
 
-### 4-2. 성능 축
-- Latency vs Throughput
-- Cost (BOM, 면적, 전력) vs Performance
+### [4-2. 성능 축 — Latency/Throughput, Cost/Performance](sessions/4-2.md)
+- Batching curve, knee point 식별
+- 다이 면적 + 전력 추정 모델
+- Cost 추가한 확장 Pareto
 
-### 4-3. 응용 시나리오
-- 자율주행: 실시간성, 안전 / 챗봇 (LLM): 대용량 메모리, KV cache / 영상처리: throughput, 압축
-- 워크로드 특성 분석
+### [4-3. 응용 시나리오 — 자율주행 / 챗봇 / 영상](sessions/4-3.md)
+- 3 응용의 워크로드 특성 + 우선 metric
+- 본인 NPU에서 3 응용 모두 측정
+- 4-4 대상 응용 1개 선택
 
-### 4-4. 응용 맞춤 튜닝
-- Week 3에서 만든 NPU를 응용 한 가지에 맞게 재설계
-- 변경 전/후 성능 비교
+### [4-4. 응용 맞춤 튜닝 — Specialization 비용 측정](sessions/4-4.md)
+- 대상 응용에 맞춰 NPUConfig 재설계
+- 다른 응용에서의 회귀 측정 (specialization_efficiency)
+- 4-5 발표 슬라이드 5장 초안
 
-### 4-5. 발표 & 피어 리뷰
-- 문제 → 구조 → 최적화 결과를 8~10분 발표
-- 동료 평가 (구조의 합리성, 수치의 설득력)
+### [4-5. 발표 + 피어 리뷰 + 코스 마무리](sessions/4-5.md)
+- 8-10분 발표 (문제 → 구조 → 결과)
+- 피어 리뷰 1편 이상
+- 80시간 코스 회고 (7개 섹션)
 
 ## 평가 기준
 - [ ] 시나리오 1개에 대한 NPU 튜닝 결과 (변경 전/후 수치)

@@ -11,24 +11,28 @@
 
 ## 회차
 
-### 3-1. NPU 구조 설계
-- 블록 다이어그램(PE 어레이, 메모리, 컨트롤러, I/O)을 바이브 코딩으로 도출
-- 설계 의도 기록
+### [3-1. NPU 구조 설계 — 베팅을 정하기](sessions/3-1.md)
+- Defining feature, dtype, dataflow, PE array 모양 결정
+- 블록 다이어그램 + NPUConfig dataclass
 
-### 3-2. MAC & 메모리
-- MAC 유닛 동작 모델
-- 메모리 계층 (SRAM, DRAM) 접근 비용 모델
+### [3-2. MAC 유닛 & 메모리 계층 모델링](sessions/3-2.md)
+- MAC 유닛 (input/weight/accumulator dtype 분리)
+- 3-tier 메모리 (Register / SRAM / DRAM) cost 모델
+- INT8 누적 오버플로우 *의도된 실패* 실험
 
-### 3-3. 시뮬레이션 환경 통합
-- Week 1, 2 산출물과 통합한 성능 모델 v2
+### [3-3. 시뮬레이션 환경 구축 — NPU 통합 시뮬레이터](sessions/3-3.md)
+- 3-1 config + 3-2 부품 + 2-2 systolic을 합쳐 `NPU.run(workload)`
+- 4개 단위 테스트 (정확/큰/작은/non-square 워크로드)
 
-### 3-4. 연산량 vs 시간
-- Arithmetic Intensity, Roofline 모델 도입
-- 시뮬레이션 코드 + 로그 분석
+### [3-4. 연산량 vs 시간 — 본인 NPU의 Roofline](sessions/3-4.md)
+- 5개 표준 AI 워크로드 측정
+- Roofline 차트 + Week 2 칩 카탈로그와 cross-comparison
+- *Defining feature → 수치 우위* 번역 자가 평가
 
-### 3-5. 병목 분석
-- Memory-bound vs Compute-bound 판별
-- 만든 구조를 수치로 평가, 한계점 파악
+### [3-5. 병목 찾기 + 1회 설계 변경 — Week 3 마무리](sessions/3-5.md)
+- 병목 진단 (memory / compute / underutilized)
+- 1회 설계 변경 → 재측정 → trade-off 분석
+- Week 3 누적 보고서 작성
 
 ## 평가 기준
 - [ ] NPU 시뮬레이터가 MatMul / Conv 한 종류 이상 처리
