@@ -9,14 +9,14 @@
 | `mac.v` | signed INT8 × INT8 → INT32 누적 MAC (40줄) |
 | `test_mac.py` | cocotb testbench, 4 테스트 (basic / signed / no-overflow / Python cross-check) |
 | `Makefile` | icarus 시뮬 + cocotb 표준 |
-| `dump.vcd` | (실행 후 생성) waveform — `gtkwave dump.vcd` 로 확인 |
+| `dump.vcd` | (실행 후 생성) waveform — `surfer dump.vcd` 로 확인 |
 
 ## 실행
 
 ```bash
 source ../../../.venv/bin/activate
 make           # 4개 테스트 실행 (TESTS=4 PASS=4 기대)
-gtkwave dump.vcd &   # waveform 시각화 (선택)
+surfer dump.vcd &   # waveform 시각화 (선택)
 ```
 
 ## 강사 분기 가이드 — 학생 막힘 단계별

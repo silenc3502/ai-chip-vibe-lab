@@ -86,7 +86,7 @@ initial begin
 end
 ```
 
-cocotb 가 호출하면 `dump.vcd` 생성 → GTKWave 로 열어 신호 확인.
+cocotb 가 호출하면 `dump.vcd` 생성 → Surfer 로 열어 신호 확인.
 
 ## 6. cocotb Python 측 — 자주 쓰는 패턴
 
@@ -131,10 +131,90 @@ include $(shell cocotb-config --makefiles)/Makefile.sim
 ```bash
 make            # 시뮬 실행
 make WAVES=1    # waveform 추가 생성 (도구별)
-gtkwave dump.vcd  # waveform 확인
+surfer dump.vcd &  # waveform 확인 (백그라운드)
 ```
 
-## 8. 흔한 함정
+## 8. Surfer 사용법 (waveform 뷰어)
+
+cocotb 시뮬이 `dump.vcd` 를 만들면 Surfer 로 *매 사이클의 신호 변화* 를 시각화. 처음 열면 **빈 wave 영역**만 보임 — 신호를 *명시적으로 추가*해야 그래프 표시됨.
+
+### 8.1 실행
+
+```bash
+make                      # 먼저 시뮬 (dump.vcd 생성)
+surfer dump.vcd &         # 백그라운드로 GUI 띄움
+# 또는
+surfer ./dump.vcd         # 절대/상대 경로 모두 OK
+```
+
+### 8.2 UI 레이아웃
+
+```
+┌─────────────────────────────────────────────────┐
+│ [메뉴]  File  View  ...                         │
+├──────────────┬──────────────────────────────────┤
+│ Variables    │                                  │
+│ (모듈 트리)  │  Wave area                       │
+│              │  (처음엔 비어 있음)              │
+│  TOP         │                                  │
+│  └── mac     │                                  │
+│      ├ acc   │                                  │
+│      ├ clk   │                                  │
+│      ├ ...   │                                  │
+├──────────────┴──────────────────────────────────┤
+│ Time scrollbar / 줌 컨트롤                      │
+└─────────────────────────────────────────────────┘
+```
+
+좌측 panel 안 보이면: `View → Show variables` 또는 단축키 `Cmd+B` (macOS) / `Ctrl+B`.
+
+### 8.3 신호 추가 (4 단계)
+
+1. **모듈 클릭** — 좌측 트리에서 `mac` 클릭. 그 안의 신호 목록 (`acc, clk, in_data, rst, weight`) 등장.
+2. **신호 추가** — 다음 셋 중 하나:
+   - 신호 *더블클릭*
+   - 신호 *우클릭 → Add to wave*
+   - 우측 wave 영역으로 *드래그*
+3. **여러 신호 한 번에**: `Shift+클릭` 또는 `Cmd/Ctrl+클릭` 으로 다중 선택 후 추가.
+4. **순서 정렬**: 추가된 신호를 wave 영역에서 드래그로 위/아래 이동.
+
+### 8.4 시간 줌 / 이동
+
+| 단축키 | 동작 |
+| --- | --- |
+| `f` | Fit to view (전체 시뮬 시간 보이게) |
+| `+` / `-` | 줌인 / 줌아웃 |
+| 마우스 휠 | 줌인/아웃 (커서 위치 기준) |
+| 드래그 (wave 영역) | 시간 축 이동 |
+| `g` | Goto specific time (대화창) |
+
+> 신호 추가했는데 *평탄한 직선* 만 보이면 거의 항상 *너무 멀리 줌인* 된 상태. `f` 한 번 누르면 전체 시뮬 시간이 보임.
+
+### 8.5 신호 표현 형식 변경
+
+추가된 신호 우클릭 → `Format`:
+- `Decimal (signed)` — INT8/INT32 신호의 *진짜 값* (음수 포함)
+- `Decimal (unsigned)` — 부호 없는 정수
+- `Hex` — 16진
+- `Binary` — 비트 패턴 (디버깅 시 유용)
+
+본 코스의 `acc [31:0]` 는 *signed* 이므로 `Decimal (signed)` 권장 — 그래야 음수 누적 결과가 정상 표시됨.
+
+### 8.6 흔한 막힘
+
+| 증상 | 원인 | 해결 |
+| --- | --- | --- |
+| Wave 영역 비어 있음 | 신호 추가 안 함 | 8.3 단계 따라 모듈 → 더블클릭 |
+| 모든 신호가 평탄한 직선 | 너무 멀리 줌인 | `f` 키 또는 마우스 휠 줌아웃 |
+| 좌측 panel 안 보임 | 사이드바 hidden | `Cmd+B` (또는 View 메뉴) |
+| `acc` 값이 큰 양수 (음수 기대인데) | unsigned 표시 모드 | 우클릭 → Format → Decimal (signed) |
+| 새로 만든 dump.vcd 안 반영 | Surfer 가 캐시 사용 | Surfer 종료 후 다시 띄우기 (또는 `r` 로 reload) |
+
+### 8.7 명령행 자동 로드 (advanced)
+
+매번 신호 클릭이 귀찮으면 `--state-file` 로 저장한 워크스페이스 재사용 가능. 본 코스에선 *학생이 매번 직접 추가하면서 신호 의미 익히는 게 학습 포인트* 라 굳이 안 함.
+
+## 9. 흔한 함정
 
 | 증상 | 원인 | 해결 |
 | --- | --- | --- |
@@ -145,13 +225,14 @@ gtkwave dump.vcd  # waveform 확인
 | `dut.signal.value = -3` 후 부호 깨짐 | unsigned 모듈에 음수 입력 | signed 명시 또는 2's complement 변환 |
 | Latch warning | `always @(*)` 에서 모든 분기에 값 할당 안 함 | `else` 또는 default 추가 |
 
-## 9. 외부 자료 (더 깊이)
+## 10. 외부 자료 (더 깊이)
 
 - [HDLBits](https://hdlbits.01xz.net/) — 인터랙티브 Verilog 문제 (영어)
 - [ASIC World — Verilog](https://www.asic-world.com/verilog/index.html) — 표준 reference (영어)
 - [Asynchronous Logic in Verilog (Korean)](https://wikidocs.net/240020) — 한국어 입문서
+- [Surfer 공식 문서](https://surfer-project.org/) — waveform 뷰어 가이드
 
-## 10. 본 코스에서 *안* 쓰는 것
+## 11. 본 코스에서 *안* 쓰는 것
 
 - `initial` 블록 (testbench 외) — 합성 안 됨
 - `for` 루프 (제한적 사용 가능하지만 본 코스 회차에서는 회피)

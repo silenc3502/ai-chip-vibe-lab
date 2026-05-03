@@ -44,6 +44,12 @@
 
 전체 reference는 macOS Apple Silicon (M4 Max)에서 검증되었으며, *플랫폼 의존성*(예: Apple AMX 매트릭스 코프로세서로 인한 utilization > 100% 현상)은 각 세션 가이드의 *흔한 막힘 포인트*에 명시되어 있습니다.
 
+**한 명령으로 전체 회귀 검증**:
+```bash
+scripts/verify_all.sh           # 전체 (~3분, 20 테스트)
+scripts/verify_all.sh week3     # 특정 주차만
+```
+
 ## 평가 원칙
 
 모든 산출물은 다음 두 축으로 평가:

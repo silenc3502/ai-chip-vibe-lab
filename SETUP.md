@@ -44,6 +44,8 @@ pip install numpy matplotlib py-cpuinfo cocotb
 - `py-cpuinfo` — Week 1-3 (CPU SIMD ISA 검출)
 - `cocotb` — Week 3-2 부터 Verilog 검증에 사용
 
+> 💡 *왜 cocotb 를 1-1 부터 미리 설치?* — Week 3-2 회차가 *Verilog 신규 도구 + 첫 RTL 작성* 으로 무거움. cocotb 와 icarus 를 미리 깔아두면 Week 3 첫날 *환경 셋업 30분* 을 절약. Week 1-2 에서는 안 써도 무방.
+
 회차마다 추가 패키지가 필요하면 해당 회차 README에 명시합니다.
 
 ---
@@ -100,20 +102,24 @@ sudo apt install iverilog
 iverilog -V    # 11.0 이상 권장
 ```
 
-### 6.2 GTKWave (waveform 뷰어)
+### 6.2 Waveform 뷰어 — Surfer (M4 Apple Silicon native)
 
 ```bash
-# macOS
-brew install --cask gtkwave
+# macOS (권장 — Apple Silicon native arm64)
+brew install surfer
 
 # Ubuntu/WSL
-sudo apt install gtkwave
+brew install surfer    # 또는 cargo install --locked surfer
 ```
 
 설치 확인:
 ```bash
-gtkwave --version    # 3.3.x 이상
+surfer --version       # 0.7.0 이상
 ```
+
+> **왜 Surfer?** GTKWave 는 macOS Apple Silicon (M3/M4) 에서 quarantine + sandboxing 이슈로 안정적이지 않습니다. **Surfer 는 Rust 기반 modern waveform viewer** 로 arm64 native 바이너리, brew 1줄 설치, 더 깔끔한 UI. VCD/FST/GHW 모두 지원.
+>
+> Linux/WSL 학생은 GTKWave 도 OK (`sudo apt install gtkwave`), 단 통일성을 위해 Surfer 권장.
 
 ### 6.3 cocotb (Python testbench, §3 에서 이미 설치)
 
@@ -137,7 +143,7 @@ python3 -c "import cocotb; print(cocotb.__version__)"
 git --version
 claude --version    # 또는 강사가 지정한 에이전트
 iverilog -V | head -1                          # Week 3-2 부터
-gtkwave --version | head -1                    # Week 3-2 부터
+surfer --version                               # Week 3-2 부터 (waveform 뷰어)
 ```
 
 문제 발생 시 1-1 회차 가이드의 *흔한 막힘 포인트*를 먼저 확인하세요.
