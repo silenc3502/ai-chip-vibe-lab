@@ -133,8 +133,13 @@ class NPU:
         sram_energy = sram_accesses * self.sram.energy_pj_per_byte
         total_energy = mac_energy + dram_energy + sram_energy
 
-        # Functional result (NumPy)
-        C = (A.astype(np.float32) @ B.astype(np.float32)).astype(A.dtype)
+        # Functional result at accumulator precision (mirrors real NPU behavior:
+        # INT8 inputs → INT32 accumulator → INT32 result; user handles requant if needed).
+        accum_np = {
+            "int8": np.int32, "int16": np.int32, "int32": np.int32,
+            "fp16": np.float32, "bf16": np.float32, "fp32": np.float32,
+        }[self.config.dtype]
+        C = (A.astype(accum_np) @ B.astype(accum_np))
 
         return RunResult(
             C=C,
@@ -153,7 +158,11 @@ def _print_test(label: str, cfg: NPUConfig, A: np.ndarray, B: np.ndarray, expect
     npu = NPU(cfg)
     r = npu.run(A, B)
     M, K = A.shape; _, N = B.shape
-    expected_C = (A.astype(np.float32) @ B.astype(np.float32)).astype(A.dtype)
+    accum_np = {
+        "int8": np.int32, "int16": np.int32, "int32": np.int32,
+        "fp16": np.float32, "bf16": np.float32, "fp32": np.float32,
+    }[cfg.dtype]
+    expected_C = (A.astype(accum_np) @ B.astype(accum_np))
     ok_C = np.allclose(r.C, expected_C, atol=1e-2)
     ok_util = expected_util_range[0] <= r.pe_utilization <= expected_util_range[1]
     print(f"\n[{label}]  M×K×N = {M}×{K}×{N}, PE = {cfg.pe_array_rows}×{cfg.pe_array_cols}")
