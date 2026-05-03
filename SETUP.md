@@ -37,8 +37,12 @@ python3 --version    # 3.11.x 이상이어야 함
 python3 -m venv .venv
 source .venv/bin/activate          # Windows WSL/Linux/macOS 동일
 pip install --upgrade pip
-pip install numpy matplotlib
+pip install numpy matplotlib py-cpuinfo cocotb
 ```
+
+- `numpy`, `matplotlib` — Week 1-4 전반 사용
+- `py-cpuinfo` — Week 1-3 (CPU SIMD ISA 검출)
+- `cocotb` — Week 3-2 부터 Verilog 검증에 사용
 
 회차마다 추가 패키지가 필요하면 해당 회차 README에 명시합니다.
 
@@ -77,7 +81,51 @@ claude --version
 
 ---
 
-## 6. 동작 확인
+## 6. RTL 도구 (Week 3-2 부터 필요)
+
+Week 3-2 회차에서 *Verilog MAC 모듈 + cocotb 테스트벤치* 를 작성합니다. 미리 설치해 두면 회차 시작이 매끄럽습니다.
+
+### 6.1 Icarus Verilog (오픈소스 Verilog 시뮬레이터)
+
+```bash
+# macOS
+brew install icarus-verilog
+
+# Ubuntu/WSL
+sudo apt install iverilog
+```
+
+설치 확인:
+```bash
+iverilog -V    # 11.0 이상 권장
+```
+
+### 6.2 GTKWave (waveform 뷰어)
+
+```bash
+# macOS
+brew install --cask gtkwave
+
+# Ubuntu/WSL
+sudo apt install gtkwave
+```
+
+설치 확인:
+```bash
+gtkwave --version    # 3.3.x 이상
+```
+
+### 6.3 cocotb (Python testbench, §3 에서 이미 설치)
+
+```bash
+python3 -c "import cocotb; print(cocotb.__version__)"   # 1.9 이상 권장
+```
+
+> 사전 학습 권장: [`templates/verilog-primer.md`](templates/verilog-primer.md) — Week 3-2 직전에 15-20분 정도 읽고 들어오면 학습 곡선이 완만해집니다.
+
+---
+
+## 7. 동작 확인
 
 다음 명령이 모두 성공하면 준비 완료입니다.
 
@@ -85,8 +133,11 @@ claude --version
 python3 --version                              # 3.11+
 python3 -c "import numpy; print(numpy.__version__)"
 python3 -c "import matplotlib; print(matplotlib.__version__)"
+python3 -c "import cocotb; print(cocotb.__version__)"
 git --version
 claude --version    # 또는 강사가 지정한 에이전트
+iverilog -V | head -1                          # Week 3-2 부터
+gtkwave --version | head -1                    # Week 3-2 부터
 ```
 
 문제 발생 시 1-1 회차 가이드의 *흔한 막힘 포인트*를 먼저 확인하세요.
