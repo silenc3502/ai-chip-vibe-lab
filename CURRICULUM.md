@@ -1,10 +1,9 @@
 # 커리큘럼 상세
 
 총 4주 × 5회차 × 4시간 = **80시간**.
+각 회차는 **4 × (40분 학습 + 20분 휴식)** = 160분 순 학습 구조. *이론 강의*와 *바이브 코딩 실습*을 결합하며, 회차 종료 시 프롬프트 로그를 누적 저장합니다.
 
-각 회차는 *이론 강의*와 *바이브 코딩 실습*을 결합하며, 회차 종료 시 프롬프트 로그를 누적 저장합니다.
-
-> 표의 회차 번호는 세션 가이드 링크입니다. [SETUP.md](SETUP.md)부터 시작하세요.
+> 표의 회차 번호는 세션 가이드 링크입니다. [SETUP.md](SETUP.md)부터 시작하세요. Week 3 부터 RTL (Verilog + cocotb) 도구도 사용 — [`templates/verilog-primer.md`](templates/verilog-primer.md) 사전 학습 권장.
 
 ---
 
@@ -18,7 +17,7 @@
 | [1-2](week1/sessions/1-2.md) | CPU 구조 이해 | 메모리 계층 + pointer chasing으로 cache step 관찰 | 이론/실습 |
 | [1-3](week1/sessions/1-3.md) | SIMD / 병렬 처리 | 700배 차이를 (캐시 × SIMD × 인터프리터)로 분해 | 이론/실습 |
 | [1-4](week1/sessions/1-4.md) | 행렬 연산 시뮬레이션 | Roofline 모델로 CPU 검증 + GPU 예측 | 이론/실습 |
-| [1-5](week1/sessions/1-5.md) | CPU / GPU / NPU 비교 | NPU 파라미터 추가, 5-hardware 비교 + Week 1 보고서 | 이론/실습 |
+| [1-5](week1/sessions/1-5.md) | CPU / GPU / NPU 비교 | NPU 파라미터 추가, 5-hardware 비교 + Week 1 보고서 + Week 3 RTL 미리보기 | 이론/실습 |
 
 ---
 
@@ -29,7 +28,7 @@
 | 회차 | 주제 | 강의내용 | 방식 |
 | --- | --- | --- | --- |
 | [2-1](week2/sessions/2-1.md) | MatMul & Dataflow | 6 loop ordering → 3 stationary 분류 | 이론/실습 |
-| [2-2](week2/sessions/2-2.md) | TPU 분석 | 4×4 systolic array cycle-by-cycle 시뮬레이터 | 이론/실습 |
+| [2-2](week2/sessions/2-2.md) | TPU 분석 | 4×4 systolic array cycle-by-cycle 시뮬 + Verilog snippet 미리보기 | 이론/실습 |
 | [2-3](week2/sessions/2-3.md) | Stationary 비교 | WS / OS / IS 메모리 접근 카운팅 | 이론/실습 |
 | [2-4](week2/sessions/2-4.md) | 통합 비교 | Roofline에 TPU 추가, 5×5 워크로드 비교 표 | 이론/실습 |
 | [2-5](week2/sessions/2-5.md) | 아키텍처 분석 보고서 | 새 칩 1종 분석 + 발표 + 피어 리뷰 | 실습 |
@@ -43,9 +42,9 @@
 | 회차 | 주제 | 강의내용 | 방식 |
 | --- | --- | --- | --- |
 | [3-1](week3/sessions/3-1.md) | NPU 구조 설계 | Defining feature 결정, 블록 다이어그램, NPUConfig | 실습 |
-| [3-2](week3/sessions/3-2.md) | MAC & 메모리 | MAC 유닛 + 3-tier 메모리 모델링, INT8 오버플로우 실험 | 이론/실습 |
+| [3-2](week3/sessions/3-2.md) | MAC 유닛 (Python + Verilog) | Python `MACUnit` + **Verilog `mac.v` + cocotb**, INT8 오버플로우 실험 | 이론/실습 |
 | [3-3](week3/sessions/3-3.md) | 시뮬레이션 통합 | NPU 통합 시뮬레이터 + 4 단위 테스트 | 이론/실습 |
-| [3-4](week3/sessions/3-4.md) | 연산량 vs 시간 | 5 워크로드 측정 + roofline + 칩 카탈로그와 cross-comparison | 이론/실습 |
+| [3-4](week3/sessions/3-4.md) | 연산량 vs 시간 | 5 워크로드 + roofline + cross-comparison + **RTL 사이클 vs Python 모델 비교** | 이론/실습 |
 | [3-5](week3/sessions/3-5.md) | 병목 분석 | 병목 식별 + 1회 설계 변경 + Week 3 보고서 | 이론/실습 |
 
 ---
@@ -57,7 +56,7 @@
 | 회차 | 주제 | 강의내용 | 방식 |
 | --- | --- | --- | --- |
 | [4-1](week4/sessions/4-1.md) | 최적화 개념 | Pareto front, 48-config DSE sweep | 이론/실습 |
-| [4-2](week4/sessions/4-2.md) | 성능 축 | Latency vs Throughput batching curve, cost 모델 | 이론/실습 |
+| [4-2](week4/sessions/4-2.md) | 성능 축 | Latency vs Throughput batching curve, cost 모델, yosys 합성 (선택) | 이론/실습 |
 | [4-3](week4/sessions/4-3.md) | 응용 시나리오 | 자율주행 / 챗봇 / 영상처리 워크로드 분석 | 이론/실습 |
 | [4-4](week4/sessions/4-4.md) | 응용 맞춤 튜닝 | 응용에 맞춰 재설계 + specialization 비용 측정 | 이론/실습 |
 | [4-5](week4/sessions/4-5.md) | 발표 & 피어 리뷰 | 8-10분 발표, 80시간 코스 회고 | 발표 |

@@ -85,12 +85,21 @@ reference는 **macOS Apple Silicon (M4 Max)** 에서 검증됨. 학생이 다른
 - Systolic array: weight stationary, output 매핑 공식 `t = m + K + n` (M+K+N-1 useful cycles)
 - Stationary 비교: 메모리 접근 카운트는 *해석적(analytical)* — 사이클 시뮬 안 해도 OK
 
-### Week 3 — NPU 설계
+### Week 3 — NPU 설계 (Python + Verilog)
 
 - `NPUConfig` dataclass: name, defining_feature, dtype, dtype_bytes, pe_array_rows/cols, dataflow, clock_ghz, sram_kb, dram_bw_gbps, target_workload
 - `MACUnit(input_dtype, weight_dtype, accum_dtype)` — INT8/INT8/INT8 → 오버플로우 (의도된 실패) 시연 후 INT32 누적으로 수정
-- `NPU.run(A, B)` 시그니처: `RunResult(C, cycles, energy_pj, dram_read_bytes, dram_write_bytes, pe_utilization)` 반환
+- `NPU.run(A, B)` 시그니처: `RunResult(C, cycles, energy_pj, dram_read_bytes, dram_write_bytes, pe_utilization)` 반환. **C 는 accumulator dtype** (INT8 입력 → INT32 결과)
 - 4 unit tests 필수: 정확 fit (`pe_util≈1.0`) / 큰 multiple / 작은 (`pe_util<1.0`) / non-square
+
+#### Verilog 부분 (3-2 anchor)
+
+- 학생이 `mac.v` (signed INT8 × INT8 → INT32) + `test_mac.py` (cocotb) 작성
+- `Makefile` 은 cocotb 표준 — `VERILOG_SOURCES`, `TOPLEVEL`, `MODULE` 만 변경
+- 사이클 측정: `from cocotb.utils import get_sim_time; get_sim_time(unit="ns")` (cocotb 2.0 — `units` 아닌 `unit`)
+- Logic value 변환: `dut.signal.value.to_signed()` (cocotb 2.0)
+- *결과 cross-check*: Python `MACUnit("int8","int8","int32")` 와 RTL 결과 일치해야 — 일치 안 하면 signed 캐스팅 또는 timing 점검
+- 3-4 의 cycle 비교: 3-2 의 `mac.v` 재사용 (`VERILOG_SOURCES = ../02_mac_verilog/mac.v`)
 
 ### Week 4 — 최적화
 
@@ -110,6 +119,10 @@ reference는 **macOS Apple Silicon (M4 Max)** 에서 검증됨. 학생이 다른
 | *"피어 리뷰 내가 대신 써줘"* | 거절 — 본인 분석이 평가 대상 |
 | 학생이 numpy 인덱싱 루프로 cache 효과 측정하려 함 | Python overhead가 cache miss 비용 압도 → pointer chasing 권장 (1-2 가이드) |
 | 학생이 INT8 입력에 INT8 누적 사용 | 의도된 실패 시연 (학습 포인트) → 그 후 INT32 누적으로 수정 |
+| `iverilog: command not found` | brew install icarus-verilog 누락 또는 새 터미널 필요 | SETUP.md §6 |
+| cocotb 가 `LogicArray` 비교 실패 | `dut.signal.value.to_signed()` 또는 `int(...)` 사용 |
+| RTL 결과가 Python 과 다름 | signed/unsigned 캐스팅 또는 timing (1 cycle 지연) | signed 명시 + reset 후 `RisingEdge` 한 번 |
+| Python NPU 결과가 너무 작음 (overflow) | NPU.run 가 INT32 누적 결과 반환하는지 확인 — 03 reference 가 fix | accum_np dtype 사용 |
 
 ## 6. 산출물 자가 점검 체크리스트 (회차 종료 시)
 
